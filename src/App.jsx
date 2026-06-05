@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useAuth } from './hooks/useAuth'
 import { useEnquiries } from './hooks/useEnquiries'
 import { useTradeStats } from './hooks/useClientStats'
+import { useTheme } from './hooks/useTheme'
 import LoginScreen from './components/LoginScreen'
 import Header from './components/Header'
 import StatsStrip from './components/StatsStrip'
@@ -15,6 +16,7 @@ import { DEMO_TRADE, DEMO_ENQUIRIES, DEMO_STATS } from './lib/demoData'
 const IS_DEMO = new URLSearchParams(window.location.search).has('demo')
 
 export default function App() {
+  const { theme, toggle: toggleTheme } = useTheme()
   const { session, loading: authLoading, sendMagicLink, signOut } = useAuth()
   const { enquiries: liveEnquiries, loading, error, updateStatus, updateTag } = useEnquiries(IS_DEMO ? null : session)
   const { stats: liveStats, trade: liveTrade, refresh: refreshStats } = useTradeStats(IS_DEMO ? null : session)
@@ -93,7 +95,7 @@ export default function App() {
   if (selected) {
     return (
       <div className="app-shell">
-        <Header trade={trade} onLogout={signOut} />
+        <Header trade={trade} onLogout={signOut} theme={theme} onToggleTheme={toggleTheme} />
         <EnquiryDetail
           enquiry={selected}
           onBack={() => setSelected(null)}
@@ -112,7 +114,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <Header trade={trade} onLogout={signOut} />
+      <Header trade={trade} onLogout={signOut} theme={theme} onToggleTheme={toggleTheme} />
 
       {error && <div className="error-banner">{error}</div>}
 

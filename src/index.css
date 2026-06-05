@@ -1,4 +1,5 @@
-:root {
+:root,
+:root[data-theme="dark"] {
   --bg: #0E1116;
   --card: #171B22;
   --border: rgba(255,255,255,0.08);
@@ -15,6 +16,28 @@
   --muted-dim: #474F60;
 
   color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #F7F8FA;
+  --card: #FFFFFF;
+  --border: rgba(0,0,0,0.08);
+  --text: #1A1E26;
+  --muted: #6B7588;
+  --green: #1E8E3E;
+  --amber: #B36800;
+  --blue: #2C4FC4;
+  --red: #2C4FC4;
+  --primary: #2C4FC4;
+  --primary-hover: #1F3FAB;
+  --text-bright: #0A0D13;
+  --surface: #EEF0F4;
+  --muted-dim: #9AA3B5;
+
+  color-scheme: light;
+}
+
+:root {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
@@ -208,6 +231,23 @@ input {
   font-size: 11px;
   font-weight: 600;
   color: var(--muted);
+}
+
+.theme-toggle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: color 0.15s, background 0.15s;
+}
+
+.theme-toggle:hover,
+.theme-toggle:active {
+  color: var(--text-bright);
 }
 
 .spinner {
