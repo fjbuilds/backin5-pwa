@@ -11,6 +11,7 @@ import DateFilter from './components/DateFilter'
 import MapView from './components/MapView'
 import EnquiryCard from './components/EnquiryCard'
 import StatusPicker from './components/StatusPicker'
+import DemoTour from './components/DemoTour'
 import { groupKey, GROUP_LABELS, GROUP_ORDER } from './lib/dates'
 import { getActionColor } from './lib/actionColors'
 import { computeReminders } from './lib/reminders'
@@ -275,6 +276,8 @@ export default function App() {
         Powered by
         <img src={`${import.meta.env.BASE_URL}backin5-logo.png`} alt="BackIn5" className="powered-by-logo" />
       </div>
+
+      {IS_DEMO && <DemoTour />}
     </div>
   )
 }
