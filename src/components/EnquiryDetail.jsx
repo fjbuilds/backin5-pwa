@@ -52,10 +52,10 @@ export default function EnquiryDetail({ enquiry, onBack, onChangeStatus }) {
             </span>
           </div>
         )}
-        {enquiry.next_action && (
+        {(enquiry.preferred_contact_time || enquiry.next_action) && (
           <div className="field-row">
             <span className="label">Best time to call</span>
-            <span className="value">{enquiry.next_action}</span>
+            <span className="value">{enquiry.preferred_contact_time || enquiry.next_action}</span>
           </div>
         )}
       </div>
@@ -75,16 +75,28 @@ export default function EnquiryDetail({ enquiry, onBack, onChangeStatus }) {
             <span className="value">{enquiry.action_tag}</span>
           </div>
         )}
+        {enquiry.urgency && (
+          <div className="field-row">
+            <span className="label">Urgency</span>
+            <span className="value">{enquiry.urgency}</span>
+          </div>
+        )}
+        {enquiry.enquiry_intent && (
+          <div className="field-row">
+            <span className="label">Intent</span>
+            <span className="value">{enquiry.enquiry_intent}</span>
+          </div>
+        )}
         {enquiry.postcode && (
           <div className="field-row">
             <span className="label">Postcode</span>
             <span className="value">{enquiry.postcode}</span>
           </div>
         )}
-        {enquiry.area && (
+        {(enquiry.town || enquiry.area) && (
           <div className="field-row">
-            <span className="label">Area</span>
-            <span className="value">{enquiry.area}</span>
+            <span className="label">Town</span>
+            <span className="value">{enquiry.town || enquiry.area}</span>
           </div>
         )}
         {enquiry.source && (
@@ -94,6 +106,19 @@ export default function EnquiryDetail({ enquiry, onBack, onChangeStatus }) {
           </div>
         )}
       </div>
+
+      {/* Custom Q&A from widget */}
+      {Array.isArray(enquiry.custom_answers) && enquiry.custom_answers.length > 0 && (
+        <div className="detail-section" style={{ marginTop: 12 }}>
+          <div className="section-title">Additional details</div>
+          {enquiry.custom_answers.map((qa, i) => (
+            <div className="field-row" key={i}>
+              <span className="label">{qa.question_text}</span>
+              <span className="value">{qa.answer || '—'}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Appointment */}
       {enquiry.appointment_datetime && (

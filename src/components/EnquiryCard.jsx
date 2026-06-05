@@ -39,16 +39,22 @@ export default function EnquiryCard({ enquiry, onOpen, onChangeStatus }) {
             <span className="card-field-value">{enquiry.postcode}</span>
           </span>
         )}
-        {enquiry.area && (
+        {(enquiry.town || enquiry.area) && (
           <span className="card-field">
-            <span className="card-field-label">Area</span>
-            <span className="card-field-value">{enquiry.area}</span>
+            <span className="card-field-label">Town</span>
+            <span className="card-field-value">{enquiry.town || enquiry.area}</span>
           </span>
         )}
-        {enquiry.next_action && (
+        {enquiry.urgency && (
+          <span className="card-field">
+            <span className="card-field-label">Urgency</span>
+            <span className="card-field-value">{enquiry.urgency}</span>
+          </span>
+        )}
+        {(enquiry.preferred_contact_time || enquiry.next_action) && (
           <span className="card-field">
             <span className="card-field-label">Best time</span>
-            <span className="card-field-value">{enquiry.next_action}</span>
+            <span className="card-field-value">{enquiry.preferred_contact_time || enquiry.next_action}</span>
           </span>
         )}
         {enquiry.appointment_datetime && (
