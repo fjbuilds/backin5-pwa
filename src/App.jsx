@@ -7,6 +7,7 @@ import LoginScreen from './components/LoginScreen'
 import Header from './components/Header'
 import StatsStrip from './components/StatsStrip'
 import FilterChips from './components/FilterChips'
+import DateFilter from './components/DateFilter'
 import EnquiryCard from './components/EnquiryCard'
 import EnquiryDetail from './components/EnquiryDetail'
 import StatusPicker from './components/StatusPicker'
@@ -19,33 +20,54 @@ export default function App() {
   const { theme, toggle: toggleTheme } = useTheme()
   const { session, loading: authLoading, sendMagicLink, signInWithPassword, signOut } = useAuth()
   const { enquiries: liveEnquiries, loading, error, updateStatus, updateTag } = useEnquiries(IS_DEMO ? null : session)
-  const { stats: liveStats, trade: liveTrade, refresh: refreshStats } = useTradeStats(IS_DEMO ? null : session)
+  const { trade: liveTrade, refresh: refreshStats } = useTradeStats(IS_DEMO ? null : session)
 
   const enquiries = IS_DEMO ? DEMO_ENQUIRIES : liveEnquiries
-  const stats = IS_DEMO ? DEMO_STATS : liveStats
   const trade = IS_DEMO ? DEMO_TRADE : liveTrade
 
   const [filter, setFilter] = useState('All')
   const [selected, setSelected] = useState(null)
   const [pickerFor, setPickerFor] = useState(null)
   const [demoOverrides, setDemoOverrides] = useState({})
+  const [dateRange, setDateRange] = useState({ from: null, to: null })
 
   const displayEnquiries = IS_DEMO
     ? enquiries.map(e => demoOverrides[e.id] ? { ...e, ...demoOverrides[e.id] } : e)
     : enquiries
 
+  // Apply date range filter first
+  const dateFiltered = useMemo(() => {
+    if (!dateRange.from && !dateRange.to) return displayEnquiries
+    return displayEnquiries.filter(e => {
+      const t = new Date(e.created_at).getTime()
+      if (dateRange.from && t < dateRange.from.getTime()) return false
+      if (dateRange.to && t > dateRange.to.getTime()) return false
+      return true
+    })
+  }, [displayEnquiries, dateRange])
+
+  // Counts based on date-filtered set (so tabs reflect what user sees)
   const counts = useMemo(() => {
     const c = { 'Needs Action': 0, 'In Process': 0, 'Booked': 0 }
-    for (const e of displayEnquiries) {
+    for (const e of dateFiltered) {
       if (c[e.status] != null) c[e.status]++
     }
     return c
-  }, [displayEnquiries])
+  }, [dateFiltered])
+
+  // Top stats — live from enquiries, not from cached view
+  const liveStats = useMemo(() => ({
+    total_enquiries:     dateFiltered.length,
+    needs_action_count:  counts['Needs Action'],
+    booked_count:        counts['Booked'],
+  }), [dateFiltered, counts])
+
+  const stats = IS_DEMO ? DEMO_STATS : liveStats
 
   const filtered = useMemo(() => {
-    if (filter === 'All') return displayEnquiries
-    return displayEnquiries.filter((e) => e.status === filter)
-  }, [displayEnquiries, filter])
+    if (filter === 'All') return dateFiltered
+    return dateFiltered.filter((e) => e.status === filter)
+  }, [dateFiltered, filter])
 
   const grouped = useMemo(() => {
     const buckets = { today: [], yesterday: [], week: [], older: [] }
@@ -55,7 +77,6 @@ export default function App() {
     return buckets
   }, [filtered])
 
-  // In demo mode, skip the auth loading spinner entirely
   if (authLoading && !IS_DEMO) {
     return (
       <div className="app-shell">
@@ -119,12 +140,17 @@ export default function App() {
       {error && <div className="error-banner">{error}</div>}
 
       <StatsStrip stats={stats} />
+
+      <div className="date-filter-bar">
+        <DateFilter range={dateRange} onChange={setDateRange} />
+      </div>
+
       <FilterChips active={filter} counts={counts} onChange={setFilter} />
 
       <div className="feed">
         {filtered.length === 0 ? (
           <div className="empty">
-            {loading ? 'Loading enquiries…' : 'No enquiries yet.'}
+            {loading ? 'Loading enquiries…' : 'No enquiries match.'}
           </div>
         ) : (
           GROUP_ORDER.map((g) => {

@@ -1,5 +1,5 @@
-import { getStatusColor } from './StatusPill'
 import { formatCardDate } from '../lib/dates'
+import { getActionColor } from '../lib/actionColors'
 
 function urgencyMeta(urgency) {
   const u = (urgency || '').toLowerCase()
@@ -11,16 +11,15 @@ function urgencyMeta(urgency) {
 }
 
 export default function EnquiryCard({ enquiry, onOpen, onChangeStatus }) {
-  const statusColor = getStatusColor(enquiry.status)
-  const statusLabel = enquiry.action_tag || enquiry.status
+  const tag = enquiry.action_tag || enquiry.status || 'Review Details'
+  const tagColor = getActionColor(tag)
   const town = enquiry.town || enquiry.area
   const urgency = urgencyMeta(enquiry.urgency)
   const bestTime = enquiry.preferred_contact_time || enquiry.next_action
 
   return (
-    <div className="card-v2">
+    <div className="card-v2" style={{ borderLeft: `3px solid ${tagColor}` }}>
       <button className="card-v2-main" onClick={() => onOpen(enquiry)}>
-        {/* Top row: name + urgency */}
         <div className="card-v2-top">
           <span className="card-v2-name">{enquiry.customer_name || 'Unknown'}</span>
           {urgency && (
@@ -31,19 +30,16 @@ export default function EnquiryCard({ enquiry, onOpen, onChangeStatus }) {
           )}
         </div>
 
-        {/* Service line */}
         {enquiry.service_requested && (
           <div className="card-v2-service">{enquiry.service_requested}</div>
         )}
 
-        {/* Location + best time */}
         <div className="card-v2-sub">
           {enquiry.postcode && <span className="card-v2-loc">{enquiry.postcode}</span>}
           {town && <span className="card-v2-loc">{town}</span>}
           {bestTime && <span className="card-v2-best">· {bestTime}</span>}
         </div>
 
-        {/* Appointment badge */}
         {enquiry.appointment_datetime && (
           <div className="appt-badge">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
@@ -56,16 +52,14 @@ export default function EnquiryCard({ enquiry, onOpen, onChangeStatus }) {
           </div>
         )}
 
-        {/* Footer: status + time */}
         <div className="card-v2-foot">
-          <span className="card-v2-status" style={{ background: `${statusColor}1A`, color: statusColor }}>
-            {statusLabel}
+          <span className="card-v2-status" style={{ background: `${tagColor}1A`, color: tagColor }}>
+            {tag}
           </span>
           <span className="card-v2-time">{formatCardDate(enquiry.created_at)}</span>
         </div>
       </button>
 
-      {/* Side action buttons */}
       <div className="card-v2-actions">
         {enquiry.phone && (
           <a className="card-act-btn" href={`tel:${enquiry.phone}`} onClick={(e) => e.stopPropagation()} aria-label="Call">

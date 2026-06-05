@@ -697,6 +697,150 @@ input {
 }
 
 /* ──────────────────────────────────────────────────
+   Date filter
+   ────────────────────────────────────────────────── */
+
+.date-filter-bar {
+  padding: 0 16px 10px;
+}
+
+.date-filter-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.date-filter-trigger:active {
+  background: var(--surface);
+}
+
+.date-sheet {
+  padding-top: 8px !important;
+}
+
+.date-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 0 14px;
+}
+
+.date-preset {
+  padding: 6px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.date-preset.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.date-cal {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.date-cal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+}
+
+.date-cal-month {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-bright);
+}
+
+.date-cal-nav {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: none;
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.date-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.date-cal-dayhead {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted-dim);
+  text-align: center;
+  padding: 4px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.date-cal-day {
+  aspect-ratio: 1;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.date-cal-day:hover {
+  background: var(--surface);
+}
+
+.date-cal-day.edge {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+}
+
+.date-cal-day.in {
+  background: rgba(44, 79, 196, 0.18);
+  color: var(--text-bright);
+}
+
+.date-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.date-actions .sheet-cancel {
+  flex: 1;
+  margin-top: 0;
+  background: var(--surface);
+  border-radius: 10px;
+}
+
+.date-actions .btn-primary {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+/* ──────────────────────────────────────────────────
    Enquiry Card v2 — scannable, action-first
    ────────────────────────────────────────────────── */
 
