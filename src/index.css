@@ -696,6 +696,316 @@ input {
   font-size: 13px;
 }
 
+/* ──────────────────────────────────────────────────
+   Enquiry Detail v2 — card-based, action-first
+   ────────────────────────────────────────────────── */
+
+.detail-v2 {
+  padding: 0 16px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detail-v2 .back-btn {
+  align-self: flex-start;
+  color: var(--muted);
+  font-weight: 500;
+  padding: 14px 0 6px;
+  font-size: 14px;
+}
+
+/* Hero */
+.hero-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hero-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.hero-name {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text-bright);
+  line-height: 1.15;
+}
+
+.hero-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.hero-status-pill {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* Quick action buttons */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.qa-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 12px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s, transform 0.05s;
+}
+
+.qa-btn:active {
+  transform: scale(0.97);
+}
+
+.qa-btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.qa-btn-primary svg {
+  color: #fff;
+}
+
+/* Contact strip below quick actions */
+.contact-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 4px 12px;
+}
+
+.contact-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.contact-line:last-child {
+  border-bottom: none;
+}
+
+.contact-label {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.contact-value {
+  font-weight: 600;
+  color: var(--text-bright);
+  text-decoration: none;
+  text-align: right;
+  word-break: break-word;
+  max-width: 65%;
+}
+
+a.contact-value {
+  color: var(--primary);
+}
+
+/* At-a-glance grid */
+.glance-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.glance-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.glance-wide {
+  grid-column: 1 / -1;
+}
+
+.glance-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--muted);
+}
+
+.glance-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-bright);
+  line-height: 1.3;
+}
+
+/* Generic info card */
+.info-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.info-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+}
+
+.info-card-body {
+  padding: 0 14px 4px;
+}
+
+.kv-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.kv-row:last-child {
+  border-bottom: none;
+}
+
+.kv-label {
+  color: var(--muted);
+}
+
+.kv-value {
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+/* Q&A rows for custom answers */
+.qa-row {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.qa-row:last-child {
+  border-bottom: none;
+}
+
+.qa-question {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 3px;
+}
+
+.qa-answer {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+/* Appointment card */
+.appointment-card {
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #fff;
+}
+
+.appt-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.appt-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  opacity: 0.85;
+  font-weight: 600;
+}
+
+.appt-value {
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* Media card */
+.media-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.media-preview {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  background: var(--surface);
+}
+
+.media-link {
+  display: inline-block;
+  padding: 14px;
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Notes */
+.notes-text {
+  padding: 4px 0 10px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
 /* Hide old classes that shouldn't appear */
 .logo-square { display: none; }
 
