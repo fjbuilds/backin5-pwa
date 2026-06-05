@@ -17,12 +17,13 @@ if (IS_DEMO) {
   if ('caches' in window) {
     caches.keys().then(keys => keys.forEach(k => caches.delete(k))).catch(() => {})
   }
-  // Reset every BackIn5 localStorage key — tour, theme override, anything else —
-  // so each demo visitor sees the same starting state.
+  // Reset every BackIn5 localStorage key — tour, etc. — so each demo visitor sees
+  // the same starting state. Then lock the theme to light for marketing parity.
   try {
     Object.keys(localStorage).forEach(k => {
-      if (k.startsWith('bi5_') || k === 'backin5-theme') localStorage.removeItem(k)
+      if (k.startsWith('bi5_')) localStorage.removeItem(k)
     })
+    localStorage.setItem('backin5-theme', 'light')
   } catch {}
 } else {
   // Real users get the offline-capable PWA with aggressive auto-update.

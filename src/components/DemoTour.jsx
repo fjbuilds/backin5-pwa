@@ -1,10 +1,8 @@
 import { useEffect, useState, useLayoutEffect } from 'react'
 
-const STORAGE_KEY = 'bi5_tour_seen_v1'
-
 const STEPS = [
   {
-    target: null, // centred welcome card, no target
+    target: null,
     title: 'Welcome to your BackIn5 dashboard',
     body: 'This is a live demo with 5 example enquiries. Have a click around - nothing here will affect a real customer. We\'ll walk you through it in 6 quick steps.',
     pos: 'center',
@@ -48,6 +46,7 @@ const STEPS = [
 ]
 
 function getRect(selector) {
+  if (!selector) return null
   const el = document.querySelector(selector)
   if (!el) return null
   const r = el.getBoundingClientRect()
@@ -55,35 +54,55 @@ function getRect(selector) {
 }
 
 export default function DemoTour() {
-  // Demo mode = always start fresh, no persistence between sessions.
   const [active, setActive] = useState(true)
   const [step, setStep] = useState(0)
   const [rect, setRect] = useState(null)
 
+  const s = STEPS[step]
+
+  // Recompute rect whenever step / window changes.
   useLayoutEffect(() => {
     if (!active) return
-    const tgt = STEPS[step].target
-    if (!tgt) { setRect(null); return } // centred step
-    const update = () => setRect(getRect(tgt))
+    if (!s.target) { setRect(null); return }
+    const update = () => setRect(getRect(s.target))
     update()
-    const t = setTimeout(update, 80)
+    // Retry shortly after in case DOM hasn't settled
+    const t1 = setTimeout(update, 60)
+    const t2 = setTimeout(update, 200)
     window.addEventListener('resize', update)
     window.addEventListener('scroll', update, true)
     return () => {
-      clearTimeout(t)
+      clearTimeout(t1); clearTimeout(t2)
       window.removeEventListener('resize', update)
       window.removeEventListener('scroll', update, true)
     }
-  }, [step, active])
+  }, [step, active, s.target])
+
+  // If the target never resolves after a short grace period, skip the step.
+  useEffect(() => {
+    if (!active || !s.target) return
+    if (rect) return
+    const t = setTimeout(() => {
+      if (!getRect(s.target)) {
+        setStep(p => (p < STEPS.length - 1 ? p + 1 : p))
+      }
+    }, 600)
+    return () => clearTimeout(t)
+  }, [step, rect, active, s.target])
 
   if (!active) return null
-  const s = STEPS[step]
 
-  // Centred welcome card (no spotlight)
+  function dismiss() { setActive(false) }
+  function next() {
+    if (step < STEPS.length - 1) setStep(step + 1)
+    else dismiss()
+  }
+
+  // Centred welcome card
   if (s.pos === 'center' || !s.target) {
     return (
       <>
-        <div className="tour-backdrop" onClick={() => {/* block clicks */}} />
+        <div className="tour-backdrop" />
         <div className="tour-pop tour-pop-center" role="dialog" aria-label={s.title}>
           <button className="tour-close" onClick={dismiss} aria-label="Close tour">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -103,52 +122,46 @@ export default function DemoTour() {
     )
   }
 
-  if (!rect) {
-    if (step < STEPS.length - 1) setStep(step + 1)
-    else setActive(false)
-    return null
-  }
-
-  function dismiss() {
-    // No localStorage write — demo always restarts fresh on next visit.
-    setActive(false)
-  }
-  function next() {
-    if (step < STEPS.length - 1) setStep(step + 1)
-    else dismiss()
-  }
-
-  // Position pop-up relative to target — clamp inside viewport
-  const vw = window.innerWidth, vh = window.innerHeight
+  // Targeted step — if rect not ready yet, show popup at safe centre top
+  // and no spotlight. Layout effect will reposition once DOM is ready.
+  const vw = typeof window !== 'undefined' ? window.innerWidth  : 400
+  const vh = typeof window !== 'undefined' ? window.innerHeight : 700
   const POP_W = Math.min(280, vw - 32)
-  let top, left
   const padding = 12
-  if (s.pos === 'bottom') {
-    top = Math.min(rect.bottom + padding, vh - 180)
-    left = Math.max(16, Math.min(rect.left + rect.width / 2 - POP_W / 2, vw - POP_W - 16))
-  } else if (s.pos === 'left') {
-    top = Math.max(16, Math.min(rect.top, vh - 180))
-    left = Math.max(16, rect.left - POP_W - padding)
-    if (left < 16) { left = 16; top = rect.bottom + padding }
+  let top, left
+
+  if (rect) {
+    if (s.pos === 'bottom') {
+      top  = Math.min(rect.bottom + padding, vh - 200)
+      left = Math.max(16, Math.min(rect.left + rect.width / 2 - POP_W / 2, vw - POP_W - 16))
+    } else if (s.pos === 'left') {
+      top  = Math.max(16, Math.min(rect.top, vh - 200))
+      left = Math.max(16, rect.left - POP_W - padding)
+      if (left < 16) { left = 16; top = rect.bottom + padding }
+    } else {
+      top  = Math.min(rect.bottom + padding, vh - 200)
+      left = Math.max(16, Math.min(rect.left, vw - POP_W - 16))
+    }
   } else {
-    top = Math.min(rect.bottom + padding, vh - 180)
-    left = Math.max(16, Math.min(rect.left, vw - POP_W - 16))
+    // No rect yet — position safely so user still sees the card
+    top  = 80
+    left = (vw - POP_W) / 2
   }
 
   return (
     <>
-      {/* Highlight ring around target */}
-      <div
-        className="tour-spot"
-        style={{
-          top: rect.top - 6,
-          left: rect.left - 6,
-          width: rect.width + 12,
-          height: rect.height + 12,
-        }}
-      />
+      {rect && (
+        <div
+          className="tour-spot"
+          style={{
+            top: rect.top - 6,
+            left: rect.left - 6,
+            width: rect.width + 12,
+            height: rect.height + 12,
+          }}
+        />
+      )}
 
-      {/* Pop-up card */}
       <div
         className="tour-pop"
         style={{ top, left, width: POP_W }}
