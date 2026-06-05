@@ -56,5 +56,17 @@ export function useEnquiries(session) {
     }
   }, [fetchEnquiries])
 
-  return { enquiries, loading, error, refresh: fetchEnquiries, updateStatus, updateTag }
+  const updateNotes = useCallback(async (id, notes) => {
+    setEnquiries((prev) => prev.map((e) => (e.id === id ? { ...e, internal_notes: notes } : e)))
+    const { error } = await supabase
+      .from('enquiries')
+      .update({ internal_notes: notes })
+      .eq('id', id)
+    if (error) {
+      setError(error.message)
+      fetchEnquiries()
+    }
+  }, [fetchEnquiries])
+
+  return { enquiries, loading, error, refresh: fetchEnquiries, updateStatus, updateTag, updateNotes }
 }
