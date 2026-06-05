@@ -1,47 +1,55 @@
 import { useEffect, useState, useLayoutEffect } from 'react'
 
+// `autoAdvance` — when set, the tour moves to the next step the moment the
+// user actually performs the action on the target (taps the card, clicks Map,
+// opens Follow-ups, etc.). Makes the tour feel like a guided journey rather
+// than a click-Next-7-times slide deck.
 const STEPS = [
   {
     target: null,
     title: 'Welcome to your BackIn5 dashboard',
-    body: 'This is a live demo with 5 example enquiries. Have a click around - nothing here will affect a real customer. We\'ll walk you through it in 6 quick steps.',
+    body: "This is a live demo with 5 example enquiries. We'll walk you through it in 6 quick steps - do each one to move on.",
     pos: 'center',
   },
   {
     target: '.card-v2-main',
-    title: 'Tap any card',
-    body: 'Cards expand inline - no extra screens.',
+    title: 'Tap any card to open it',
+    body: 'Go on - tap one of the enquiries.',
     pos: 'bottom',
+    autoAdvance: true,
   },
   {
-    target: '.card-act-btn[aria-label="Call"]',
-    title: 'Call straight from the list',
-    body: 'No need to open the card. One tap to dial.',
-    pos: 'left',
+    target: '.exp-toolbar',
+    title: 'Call, message, book - inline',
+    body: 'Everything you need is one tap away. Tap Next when ready.',
+    pos: 'bottom',
   },
   {
     target: '.feed-group-header',
     title: 'Colour-coded by what to do',
-    body: 'Orange = visit, purple = quote, green = booked. Same colour stays through every stage.',
+    body: 'Orange = visit, purple = quote, green = booked. The same colour follows the job through every stage.',
     pos: 'bottom',
   },
   {
     target: '.view-toggle-btn:last-child',
-    title: 'See jobs on a map',
-    body: 'Plan your day by area, not by guesswork.',
+    title: 'Switch to the Map',
+    body: 'Tap the Map button to see jobs by area.',
     pos: 'bottom',
+    autoAdvance: true,
   },
   {
     target: '.top-tab:nth-child(2)',
-    title: 'Auto follow-ups',
-    body: 'We chase quotes, confirm bookings, and remind you to ask for reviews.',
+    title: 'Open Follow-ups',
+    body: 'Tap the Follow-ups tab - this is where we chase quotes, confirm bookings and prompt for reviews.',
     pos: 'bottom',
+    autoAdvance: true,
   },
   {
     target: 'button[aria-label="Help"]',
-    title: 'Stuck? Tap the ?',
-    body: 'Every button and stage explained in plain English.',
+    title: 'Need help? Tap the ?',
+    body: 'Stages, buttons and features all explained in plain English. Tap it to finish the tour.',
     pos: 'left',
+    autoAdvance: true,
   },
 ]
 
@@ -60,13 +68,12 @@ export default function DemoTour() {
 
   const s = STEPS[step]
 
-  // Recompute rect whenever step / window changes.
+  // Position the spotlight + popup whenever step or window changes
   useLayoutEffect(() => {
     if (!active) return
     if (!s.target) { setRect(null); return }
     const update = () => setRect(getRect(s.target))
     update()
-    // Retry shortly after in case DOM hasn't settled
     const t1 = setTimeout(update, 60)
     const t2 = setTimeout(update, 200)
     window.addEventListener('resize', update)
@@ -78,7 +85,7 @@ export default function DemoTour() {
     }
   }, [step, active, s.target])
 
-  // If the target never resolves after a short grace period, skip the step.
+  // Skip step if target genuinely never resolves
   useEffect(() => {
     if (!active || !s.target) return
     if (rect) return
@@ -89,6 +96,24 @@ export default function DemoTour() {
     }, 600)
     return () => clearTimeout(t)
   }, [step, rect, active, s.target])
+
+  // Auto-advance: listen for a click on the target and move on
+  useEffect(() => {
+    if (!active || !s.target || !s.autoAdvance) return
+    let el = document.querySelector(s.target)
+    if (!el) return
+    const handler = () => {
+      // Brief pause so the user sees their tap take effect first
+      setTimeout(() => {
+        setStep(p => {
+          if (p >= STEPS.length - 1) { setActive(false); return p }
+          return p + 1
+        })
+      }, 320)
+    }
+    el.addEventListener('click', handler, { once: true })
+    return () => el.removeEventListener('click', handler)
+  }, [step, active, s.target, s.autoAdvance, rect])
 
   if (!active) return null
 
@@ -122,8 +147,6 @@ export default function DemoTour() {
     )
   }
 
-  // Targeted step — if rect not ready yet, show popup at safe centre top
-  // and no spotlight. Layout effect will reposition once DOM is ready.
   const vw = typeof window !== 'undefined' ? window.innerWidth  : 400
   const vh = typeof window !== 'undefined' ? window.innerHeight : 700
   const POP_W = Math.min(280, vw - 32)
@@ -143,7 +166,6 @@ export default function DemoTour() {
       left = Math.max(16, Math.min(rect.left, vw - POP_W - 16))
     }
   } else {
-    // No rect yet — position safely so user still sees the card
     top  = 80
     left = (vw - POP_W) / 2
   }
@@ -179,9 +201,14 @@ export default function DemoTour() {
         <div className="tour-body">{s.body}</div>
         <div className="tour-actions">
           <button className="tour-skip" onClick={dismiss}>Skip</button>
-          <button className="tour-next" onClick={next}>
-            {step === STEPS.length - 1 ? 'Got it' : 'Next'}
-          </button>
+          {!s.autoAdvance && (
+            <button className="tour-next" onClick={next}>
+              {step === STEPS.length - 1 ? 'Got it' : 'Next'}
+            </button>
+          )}
+          {s.autoAdvance && (
+            <span className="tour-hint">↑ try it</span>
+          )}
         </div>
       </div>
     </>
