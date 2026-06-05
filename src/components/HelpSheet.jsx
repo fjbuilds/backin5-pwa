@@ -1,49 +1,51 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { getActionColor } from '../lib/actionColors'
 
-const SECTIONS = [
+const STAGES = [
   {
     title: 'Needs Action',
-    blurb: 'New enquiries waiting for a first response.',
-    tags: [
-      { tag: 'Call Back',       desc: 'They asked for a phone call back.' },
-      { tag: 'Reply Required',  desc: 'A reply by message or email is needed.' },
-      { tag: 'Quote Required',  desc: 'They want a price for the job.' },
-      { tag: 'Visit Required',  desc: 'They want you to come and see the job.' },
-      { tag: 'Review Details',  desc: 'Not sure yet - check details and decide next step.' },
-    ],
+    blurb: 'New, not yet touched.',
+    tags: ['Call Back','Reply Required','Quote Required','Visit Required','Review Details'],
   },
   {
     title: 'In Process',
-    blurb: 'You\'ve started on it but it\'s not booked yet.',
-    tags: [
-      { tag: 'Contacted',            desc: 'You\'ve reached out, awaiting their reply.' },
-      { tag: 'Waiting on Customer',  desc: 'Ball is in their court - chase if needed.' },
-      { tag: 'Quote Sent',           desc: 'Quote out, waiting for sign-off.' },
-      { tag: 'Appointment Agreed',   desc: 'Verbal agreement on a date/time.' },
-      { tag: 'Awaiting Confirmation',desc: 'Final confirmation pending.' },
-    ],
+    blurb: 'Started, waiting on customer or you.',
+    tags: ['Contacted','Waiting on Customer','Quote Sent','Appointment Agreed','Awaiting Confirmation'],
   },
   {
     title: 'Booked',
-    blurb: 'Confirmed jobs / visits. Customer booked directly = lands here automatically.',
-    tags: [
-      { tag: 'Job Booked',      desc: 'Work confirmed in the diary.' },
-      { tag: 'Callback Booked', desc: 'Phone call scheduled.' },
-      { tag: 'Visit Booked',    desc: 'Site visit / survey scheduled.' },
-      { tag: 'Quote Accepted',  desc: 'Customer accepted the quote.' },
-    ],
+    blurb: 'Confirmed - calendar bookings land here automatically.',
+    tags: ['Job Booked','Callback Booked','Visit Booked','Quote Accepted'],
   },
 ]
 
-const URGENCY = [
-  { color: '#EF4444', label: 'Urgent',    desc: 'Emergency - call now.' },
-  { color: '#D4890E', label: 'ASAP',      desc: 'As soon as possible.' },
-  { color: '#5B8DEF', label: 'This week', desc: 'Within the week.' },
-  { color: '#34A853', label: 'Flexible',  desc: 'No rush - schedule when it suits.' },
+const BUTTONS = [
+  { name: 'Card (tap)',  desc: 'Expands the card inline to see all details.' },
+  { name: 'Phone icon',  desc: 'Calls the customer straight away.' },
+  { name: 'Arrow icon',  desc: 'Opens the stage picker to move them through.' },
+  { name: 'Call',        desc: 'Same as phone icon — direct dial.' },
+  { name: 'SMS',         desc: 'Pre-written messages, one tap to send.' },
+  { name: 'WhatsApp',    desc: 'Opens WhatsApp with a templated message.' },
+  { name: 'Calendar',    desc: 'Adds the appointment to your phone calendar.' },
+  { name: 'Voice note',  desc: 'Speak after a call - saved as a note.' },
+  { name: 'Stage',       desc: 'Moves the enquiry to the next stage.' },
+]
+
+const FUNCTIONS = [
+  { name: 'List / Map',         desc: 'See jobs as a list or pinned on a map by postcode.' },
+  { name: 'Date filter',        desc: 'Today, last 7 days, custom range etc.' },
+  { name: 'Follow-ups tab',     desc: 'Auto reminders: chase quotes, confirm bookings, ask for reviews.' },
+  { name: 'Urgency badge',      desc: 'Red / amber / blue / green - how soon they need you.' },
+  { name: 'Action colour',      desc: 'Left border + tag colour stays consistent through stages.' },
+  { name: 'Auto-Booked',        desc: 'Calendar bookings skip Needs Action and go straight to Booked.' },
+  { name: 'Specialist Qs',      desc: 'Your custom widget questions show in amber on the card.' },
+  { name: 'Photo / video',      desc: 'Customer uploads show inline, tap to enlarge.' },
+  { name: 'Internal notes',     desc: 'Saved per enquiry. Voice notes append with timestamps.' },
 ]
 
 export default function HelpSheet({ onClose }) {
+  const [tab, setTab] = useState('stages')
+
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose() }
     document.body.style.overflow = 'hidden'
@@ -60,50 +62,56 @@ export default function HelpSheet({ onClose }) {
       <div className="sheet help-sheet" role="dialog" aria-label="Help">
         <div className="handle" />
 
-        <div className="help-head">
-          <h2>How this works</h2>
-          <p>Every enquiry has a colour + tag so you can scan the list and act fast. Tap any card to see details, tap the phone icon to call straight away.</p>
+        <div className="help-tabs" role="tablist">
+          <button role="tab" aria-selected={tab === 'stages'}   className={`help-tab ${tab === 'stages'   ? 'active' : ''}`} onClick={() => setTab('stages')}>Stages</button>
+          <button role="tab" aria-selected={tab === 'buttons'}  className={`help-tab ${tab === 'buttons'  ? 'active' : ''}`} onClick={() => setTab('buttons')}>Buttons</button>
+          <button role="tab" aria-selected={tab === 'features'} className={`help-tab ${tab === 'features' ? 'active' : ''}`} onClick={() => setTab('features')}>Features</button>
         </div>
 
-        {/* Urgency key */}
-        <div className="help-block">
-          <div className="help-block-title">Urgency (top-right of card)</div>
-          {URGENCY.map(u => (
-            <div className="help-row" key={u.label}>
-              <span className="help-dot" style={{ background: u.color }} />
-              <div className="help-row-text">
-                <div className="help-row-tag">{u.label}</div>
-                <div className="help-row-desc">{u.desc}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Action tags */}
-        {SECTIONS.map(section => (
-          <div className="help-block" key={section.title}>
-            <div className="help-block-title">{section.title}</div>
-            <div className="help-block-blurb">{section.blurb}</div>
-            {section.tags.map(t => (
-              <div className="help-row" key={t.tag}>
-                <span className="help-dot" style={{ background: getActionColor(t.tag) }} />
-                <div className="help-row-text">
-                  <div className="help-row-tag">{t.tag}</div>
-                  <div className="help-row-desc">{t.desc}</div>
+        <div className="help-body">
+          {tab === 'stages' && (
+            <div className="help-pane">
+              <p className="help-intro">Every enquiry moves through three stages. Tap the arrow icon on a card to change.</p>
+              {STAGES.map(s => (
+                <div className="help-stage" key={s.title}>
+                  <div className="help-stage-title">{s.title}</div>
+                  <div className="help-stage-blurb">{s.blurb}</div>
+                  <div className="help-stage-tags">
+                    {s.tags.map(t => (
+                      <span className="help-tag-chip" key={t} style={{ background: `${getActionColor(t)}1F`, color: getActionColor(t) }}>
+                        <span className="help-dot-mini" style={{ background: getActionColor(t) }} />
+                        {t}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ))}
+              ))}
+            </div>
+          )}
 
-        <div className="help-block">
-          <div className="help-block-title">Quick tips</div>
-          <ul className="help-tips">
-            <li>📞 Tap the phone icon on a card to call without opening.</li>
-            <li>🔄 Tap the arrow icon to change a stage from the list.</li>
-            <li>📅 Use the date filter to focus on today, this week, or any range.</li>
-            <li>✨ Booked enquiries auto-land in Booked - no manual move needed.</li>
-          </ul>
+          {tab === 'buttons' && (
+            <div className="help-pane">
+              <p className="help-intro">Everything you can tap, in plain English.</p>
+              {BUTTONS.map(b => (
+                <div className="help-line" key={b.name}>
+                  <div className="help-line-name">{b.name}</div>
+                  <div className="help-line-desc">{b.desc}</div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {tab === 'features' && (
+            <div className="help-pane">
+              <p className="help-intro">Everything the app does, in one line each.</p>
+              {FUNCTIONS.map(f => (
+                <div className="help-line" key={f.name}>
+                  <div className="help-line-name">{f.name}</div>
+                  <div className="help-line-desc">{f.desc}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <button className="sheet-cancel" onClick={onClose}>Close</button>
