@@ -12,6 +12,7 @@ import EnquiryCard from './components/EnquiryCard'
 import EnquiryDetail from './components/EnquiryDetail'
 import StatusPicker from './components/StatusPicker'
 import { groupKey, GROUP_LABELS, GROUP_ORDER } from './lib/dates'
+import { getActionColor } from './lib/actionColors'
 import { DEMO_TRADE, DEMO_ENQUIRIES, DEMO_STATS } from './lib/demoData'
 
 const IS_DEMO = new URLSearchParams(window.location.search).has('demo')
@@ -75,6 +76,33 @@ export default function App() {
       buckets[groupKey(e.created_at)].push(e)
     }
     return buckets
+  }, [filtered])
+
+  // "All" view groups by action tag (oranges with oranges, purples with purples).
+  // Priority order: Needs Action types first, then In Process, then Booked.
+  const TAG_ORDER = [
+    'Call Back','Reply Required','Quote Required','Visit Required','Review Details',
+    'Contacted','Waiting on Customer','Quote Sent','Appointment Agreed','Awaiting Confirmation',
+    'Job Booked','Callback Booked','Visit Booked','Quote Accepted',
+  ]
+  const groupedByTag = useMemo(() => {
+    const map = new Map()
+    for (const e of filtered) {
+      const tag = e.action_tag || e.status || 'Other'
+      if (!map.has(tag)) map.set(tag, [])
+      map.get(tag).push(e)
+    }
+    // Sort each group newest first
+    for (const arr of map.values()) {
+      arr.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    }
+    // Return in priority order, then any tags we didn't expect
+    const ordered = []
+    for (const tag of TAG_ORDER) {
+      if (map.has(tag)) { ordered.push([tag, map.get(tag)]); map.delete(tag) }
+    }
+    for (const [tag, arr] of map) ordered.push([tag, arr])
+    return ordered
   }, [filtered])
 
   if (authLoading && !IS_DEMO) {
@@ -152,12 +180,30 @@ export default function App() {
           <div className="empty">
             {loading ? 'Loading enquiries…' : 'No enquiries match.'}
           </div>
+        ) : filter === 'All' ? (
+          groupedByTag.map(([tag, items]) => (
+            <section key={tag} className="feed-group anim-stagger">
+              <div className="feed-group-header tag-group-header">
+                <span className="tag-dot" style={{ background: getActionColor(tag) }} />
+                {tag}
+                <span className="tag-count">{items.length}</span>
+              </div>
+              {items.map((enq) => (
+                <EnquiryCard
+                  key={enq.id}
+                  enquiry={enq}
+                  onOpen={setSelected}
+                  onChangeStatus={(e) => setPickerFor(e)}
+                />
+              ))}
+            </section>
+          ))
         ) : (
           GROUP_ORDER.map((g) => {
             const items = grouped[g]
             if (!items.length) return null
             return (
-              <section key={g} className="feed-group">
+              <section key={g} className="feed-group anim-stagger">
                 <div className="feed-group-header">{GROUP_LABELS[g]}</div>
                 {items.map((enq) => (
                   <EnquiryCard
