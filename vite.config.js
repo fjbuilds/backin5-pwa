@@ -8,7 +8,14 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon-192.png', 'icon-512.png'],
+      includeAssets: ['icon-192.png', 'icon-512.png', 'backin5-logo.png'],
+      workbox: {
+        // Take control of all open tabs immediately on activation, so updates
+        // apply on the next navigation without needing tabs to be closed.
+        clientsClaim: true,
+        skipWaiting: true,
+        cleanupOutdatedCaches: true,
+      },
       manifest: {
         name: 'BackIn5',
         short_name: 'BackIn5',
