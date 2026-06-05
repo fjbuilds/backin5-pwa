@@ -17,7 +17,7 @@ const IS_DEMO = new URLSearchParams(window.location.search).has('demo')
 
 export default function App() {
   const { theme, toggle: toggleTheme } = useTheme()
-  const { session, loading: authLoading, sendMagicLink, signOut } = useAuth()
+  const { session, loading: authLoading, sendMagicLink, signInWithPassword, signOut } = useAuth()
   const { enquiries: liveEnquiries, loading, error, updateStatus, updateTag } = useEnquiries(IS_DEMO ? null : session)
   const { stats: liveStats, trade: liveTrade, refresh: refreshStats } = useTradeStats(IS_DEMO ? null : session)
 
@@ -67,7 +67,7 @@ export default function App() {
   }
 
   if (!session && !IS_DEMO) {
-    return <LoginScreen sendMagicLink={sendMagicLink} />
+    return <LoginScreen sendMagicLink={sendMagicLink} signInWithPassword={signInWithPassword} />
   }
 
   function handleStatusUpdate({ status, tagField, tagValue }) {

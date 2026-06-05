@@ -25,9 +25,13 @@ export function useAuth() {
     })
   }, [])
 
+  const signInWithPassword = useCallback(async (email, password) => {
+    return supabase.auth.signInWithPassword({ email, password })
+  }, [])
+
   const signOut = useCallback(async () => {
     await supabase.auth.signOut()
   }, [])
 
-  return { session, loading, sendMagicLink, signOut }
+  return { session, loading, sendMagicLink, signInWithPassword, signOut }
 }
