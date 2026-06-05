@@ -20,6 +20,45 @@ export default function EnquiryCard({ enquiry, onOpen, onChangeStatus }) {
         </span>
       </div>
 
+      <div className="card-fields">
+        {enquiry.service_requested && (
+          <span className="card-field">
+            <span className="card-field-label">Service</span>
+            <span className="card-field-value">{enquiry.service_requested}</span>
+          </span>
+        )}
+        {enquiry.phone && (
+          <span className="card-field">
+            <span className="card-field-label">Phone</span>
+            <span className="card-field-value">{enquiry.phone}</span>
+          </span>
+        )}
+        {enquiry.postcode && (
+          <span className="card-field">
+            <span className="card-field-label">Postcode</span>
+            <span className="card-field-value">{enquiry.postcode}</span>
+          </span>
+        )}
+        {enquiry.area && (
+          <span className="card-field">
+            <span className="card-field-label">Area</span>
+            <span className="card-field-value">{enquiry.area}</span>
+          </span>
+        )}
+        {enquiry.next_action && (
+          <span className="card-field">
+            <span className="card-field-label">Best time</span>
+            <span className="card-field-value">{enquiry.next_action}</span>
+          </span>
+        )}
+        {enquiry.appointment_datetime && (
+          <span className="card-field">
+            <span className="card-field-label">Appointment</span>
+            <span className="card-field-value">{enquiry.appointment_datetime}</span>
+          </span>
+        )}
+      </div>
+
       {enquiry.job_description && (
         <div className="desc">{enquiry.job_description}</div>
       )}
@@ -32,18 +71,6 @@ export default function EnquiryCard({ enquiry, onOpen, onChangeStatus }) {
             <span className="source-tag" style={{ color: sourceColor }}>
               {enquiry.source}
             </span>
-          </>
-        )}
-        {enquiry.town && (
-          <>
-            <span className="meta-sep">·</span>
-            <span className="meta-tag">{enquiry.town}</span>
-          </>
-        )}
-        {enquiry.service_requested && (
-          <>
-            <span className="meta-sep">·</span>
-            <span className="meta-tag">{enquiry.service_requested}</span>
           </>
         )}
       </div>
