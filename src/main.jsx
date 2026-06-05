@@ -4,15 +4,33 @@ import { registerSW } from 'virtual:pwa-register'
 import App from './App.jsx'
 import './index.css'
 
-// Auto-reload as soon as a new build is available so demo visitors and
-// installed PWA users always see the latest code without manual refresh.
-registerSW({
-  immediate: true,
-  onNeedRefresh() {
-    // A new build is waiting — apply it now.
-    location.reload()
-  },
-})
+const IS_DEMO = new URLSearchParams(window.location.search).has('demo')
+
+if (IS_DEMO) {
+  // Demo should ALWAYS be fresh — never cached by the PWA service worker.
+  // Wipe any existing registration + caches so previous visits don't bleed in.
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(regs => {
+      regs.forEach(r => r.unregister())
+    }).catch(() => {})
+  }
+  if ('caches' in window) {
+    caches.keys().then(keys => keys.forEach(k => caches.delete(k))).catch(() => {})
+  }
+  // Reset every BackIn5 localStorage key — tour, theme override, anything else —
+  // so each demo visitor sees the same starting state.
+  try {
+    Object.keys(localStorage).forEach(k => {
+      if (k.startsWith('bi5_') || k === 'backin5-theme') localStorage.removeItem(k)
+    })
+  } catch {}
+} else {
+  // Real users get the offline-capable PWA with aggressive auto-update.
+  registerSW({
+    immediate: true,
+    onNeedRefresh() { location.reload() },
+  })
+}
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

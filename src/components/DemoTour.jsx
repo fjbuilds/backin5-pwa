@@ -4,6 +4,12 @@ const STORAGE_KEY = 'bi5_tour_seen_v1'
 
 const STEPS = [
   {
+    target: null, // centred welcome card, no target
+    title: 'Welcome to your BackIn5 dashboard',
+    body: 'This is a live demo with 5 example enquiries. Have a click around - nothing here will affect a real customer. We\'ll walk you through it in 6 quick steps.',
+    pos: 'center',
+  },
+  {
     target: '.card-v2-main',
     title: 'Tap any card',
     body: 'Cards expand inline - no extra screens.',
@@ -49,18 +55,18 @@ function getRect(selector) {
 }
 
 export default function DemoTour() {
-  // Skip if user already dismissed
-  const [active, setActive] = useState(() => {
-    try { return !localStorage.getItem(STORAGE_KEY) } catch { return true }
-  })
+  // Demo mode = always start fresh, no persistence between sessions.
+  const [active, setActive] = useState(true)
   const [step, setStep] = useState(0)
   const [rect, setRect] = useState(null)
 
   useLayoutEffect(() => {
     if (!active) return
-    const update = () => setRect(getRect(STEPS[step].target))
+    const tgt = STEPS[step].target
+    if (!tgt) { setRect(null); return } // centred step
+    const update = () => setRect(getRect(tgt))
     update()
-    const t = setTimeout(update, 80) // wait for layout
+    const t = setTimeout(update, 80)
     window.addEventListener('resize', update)
     window.addEventListener('scroll', update, true)
     return () => {
@@ -72,15 +78,39 @@ export default function DemoTour() {
 
   if (!active) return null
   const s = STEPS[step]
+
+  // Centred welcome card (no spotlight)
+  if (s.pos === 'center' || !s.target) {
+    return (
+      <>
+        <div className="tour-backdrop" onClick={() => {/* block clicks */}} />
+        <div className="tour-pop tour-pop-center" role="dialog" aria-label={s.title}>
+          <button className="tour-close" onClick={dismiss} aria-label="Close tour">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+          <div className="tour-step">{step + 1} of {STEPS.length}</div>
+          <div className="tour-title">{s.title}</div>
+          <div className="tour-body">{s.body}</div>
+          <div className="tour-actions tour-actions-center">
+            <button className="tour-skip" onClick={dismiss}>Skip tour</button>
+            <button className="tour-next" onClick={next}>Start →</button>
+          </div>
+        </div>
+      </>
+    )
+  }
+
   if (!rect) {
-    // Target not found — skip to next or end
     if (step < STEPS.length - 1) setStep(step + 1)
     else setActive(false)
     return null
   }
 
   function dismiss() {
-    try { localStorage.setItem(STORAGE_KEY, '1') } catch {}
+    // No localStorage write — demo always restarts fresh on next visit.
     setActive(false)
   }
   function next() {

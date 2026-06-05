@@ -2184,6 +2184,51 @@ a.contact-value {
 .logo-square { display: none; }
 
 /* Guided demo tour */
+.tour-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 12, 20, 0.55);
+  backdrop-filter: blur(2px);
+  z-index: 98;
+  animation: fade-in 0.18s ease both;
+}
+
+.tour-pop-center {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(360px, calc(100vw - 32px));
+  text-align: center;
+  padding: 22px 22px 18px;
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+  animation: pop-in 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.tour-pop-center .tour-title {
+  font-size: 18px;
+  margin-top: 6px;
+  padding-right: 0;
+}
+
+.tour-pop-center .tour-body {
+  font-size: 13.5px;
+  line-height: 1.55;
+  margin-top: 6px;
+}
+
+.tour-actions-center {
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.tour-actions-center .tour-next {
+  padding: 9px 22px;
+  font-size: 13px;
+}
+
 .tour-spot {
   position: fixed;
   border-radius: 12px;
