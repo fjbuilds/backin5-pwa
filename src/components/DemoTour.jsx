@@ -126,7 +126,7 @@ export default function DemoTour() {
   // Centred welcome card
   if (s.pos === 'center' || !s.target) {
     return (
-      <>
+      <div className="tour-center-wrap">
         <div className="tour-backdrop" />
         <div className="tour-pop tour-pop-center" role="dialog" aria-label={s.title}>
           <button className="tour-close" onClick={dismiss} aria-label="Close tour">
@@ -143,31 +143,37 @@ export default function DemoTour() {
             <button className="tour-next" onClick={next}>Start →</button>
           </div>
         </div>
-      </>
+      </div>
     )
   }
 
   const vw = typeof window !== 'undefined' ? window.innerWidth  : 400
   const vh = typeof window !== 'undefined' ? window.innerHeight : 700
-  const POP_W = Math.min(280, vw - 32)
+  // On narrow phones, take more of the width; cap so it looks polite on tablet.
+  const MARGIN = 14
+  const POP_W = Math.min(300, vw - MARGIN * 2)
   const padding = 12
   let top, left
 
   if (rect) {
     if (s.pos === 'bottom') {
-      top  = Math.min(rect.bottom + padding, vh - 200)
-      left = Math.max(16, Math.min(rect.left + rect.width / 2 - POP_W / 2, vw - POP_W - 16))
+      top  = Math.min(rect.bottom + padding, vh - 220)
+      left = Math.max(MARGIN, Math.min(rect.left + rect.width / 2 - POP_W / 2, vw - POP_W - MARGIN))
     } else if (s.pos === 'left') {
-      top  = Math.max(16, Math.min(rect.top, vh - 200))
-      left = Math.max(16, rect.left - POP_W - padding)
-      if (left < 16) { left = 16; top = rect.bottom + padding }
+      top  = Math.max(MARGIN, Math.min(rect.top, vh - 220))
+      left = Math.max(MARGIN, rect.left - POP_W - padding)
+      // Fallback: if there's no room on the left, drop below the target.
+      if (left < MARGIN) {
+        left = Math.max(MARGIN, vw - POP_W - MARGIN)
+        top = rect.bottom + padding
+      }
     } else {
-      top  = Math.min(rect.bottom + padding, vh - 200)
-      left = Math.max(16, Math.min(rect.left, vw - POP_W - 16))
+      top  = Math.min(rect.bottom + padding, vh - 220)
+      left = Math.max(MARGIN, Math.min(rect.left, vw - POP_W - MARGIN))
     }
   } else {
     top  = 80
-    left = (vw - POP_W) / 2
+    left = Math.max(MARGIN, (vw - POP_W) / 2)
   }
 
   return (
