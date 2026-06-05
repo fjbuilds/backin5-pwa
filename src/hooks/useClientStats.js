@@ -1,32 +1,34 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
+// Stats (counts) are computed live from enquiries in App.jsx — we no longer
+// query the stale `business_stats` view. This hook just resolves the trade
+// (business) the signed-in user belongs to, so the Header can show its name.
 export function useTradeStats(session) {
-  const [stats, setStats] = useState(null)
   const [trade, setTrade] = useState(null)
   const [loading, setLoading] = useState(false)
 
   const fetchAll = useCallback(async ({ silent = false } = {}) => {
     if (!session) return
     if (!silent) setLoading(true)
-    const [statsRes, bizRes] = await Promise.all([
-      supabase.from('business_stats').select('*').maybeSingle(),
-      supabase.from('businesses').select('*').maybeSingle()
-    ])
-    if (!statsRes.error) setStats(statsRes.data)
-    if (!bizRes.error) setTrade(bizRes.data)
+    // The dashboard schema uses `trades`, not `businesses`.
+    // Pick the first row the signed-in user can see (RLS-scoped).
+    const { data, error } = await supabase
+      .from('trades')
+      .select('*')
+      .limit(1)
+      .maybeSingle()
+    if (!error) setTrade(data)
     if (!silent) setLoading(false)
   }, [session])
 
-  useEffect(() => {
-    fetchAll()
-  }, [fetchAll])
+  useEffect(() => { fetchAll() }, [fetchAll])
 
   useEffect(() => {
     if (!session) return
-    const id = setInterval(() => fetchAll({ silent: true }), 30_000)
+    const id = setInterval(() => fetchAll({ silent: true }), 60_000)
     return () => clearInterval(id)
   }, [session, fetchAll])
 
-  return { stats, trade, loading, refresh: fetchAll }
+  return { trade, loading, refresh: fetchAll }
 }
