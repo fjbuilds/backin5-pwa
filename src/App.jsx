@@ -8,6 +8,7 @@ import Header from './components/Header'
 import StatsStrip from './components/StatsStrip'
 import FilterChips from './components/FilterChips'
 import DateFilter from './components/DateFilter'
+import MapView from './components/MapView'
 import EnquiryCard from './components/EnquiryCard'
 import EnquiryDetail from './components/EnquiryDetail'
 import StatusPicker from './components/StatusPicker'
@@ -31,6 +32,7 @@ export default function App() {
   const [pickerFor, setPickerFor] = useState(null)
   const [demoOverrides, setDemoOverrides] = useState({})
   const [dateRange, setDateRange] = useState({ from: null, to: null })
+  const [view, setView] = useState('list') // 'list' | 'map'
 
   const displayEnquiries = IS_DEMO
     ? enquiries.map(e => demoOverrides[e.id] ? { ...e, ...demoOverrides[e.id] } : e)
@@ -171,10 +173,44 @@ export default function App() {
 
       <div className="date-filter-bar">
         <DateFilter range={dateRange} onChange={setDateRange} />
+        <div className="view-toggle" role="tablist" aria-label="View">
+          <button
+            role="tab"
+            aria-selected={view === 'list'}
+            className={`view-toggle-btn ${view === 'list' ? 'active' : ''}`}
+            onClick={() => setView('list')}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="8" y1="6" x2="21" y2="6" />
+              <line x1="8" y1="12" x2="21" y2="12" />
+              <line x1="8" y1="18" x2="21" y2="18" />
+              <line x1="3" y1="6" x2="3.01" y2="6" />
+              <line x1="3" y1="12" x2="3.01" y2="12" />
+              <line x1="3" y1="18" x2="3.01" y2="18" />
+            </svg>
+            List
+          </button>
+          <button
+            role="tab"
+            aria-selected={view === 'map'}
+            className={`view-toggle-btn ${view === 'map' ? 'active' : ''}`}
+            onClick={() => setView('map')}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+              <line x1="8" y1="2" x2="8" y2="18" />
+              <line x1="16" y1="6" x2="16" y2="22" />
+            </svg>
+            Map
+          </button>
+        </div>
       </div>
 
       <FilterChips active={filter} counts={counts} onChange={setFilter} />
 
+      {view === 'map' ? (
+        <MapView enquiries={filtered} onOpen={setSelected} />
+      ) : (
       <div className="feed">
         {filtered.length === 0 ? (
           <div className="empty">
@@ -218,6 +254,7 @@ export default function App() {
           })
         )}
       </div>
+      )}
 
       {pickerFor && (
         <StatusPicker
