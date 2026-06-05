@@ -270,6 +270,11 @@ export default function App() {
           onClose={() => setPickerFor(null)}
         />
       )}
+
+      <div className="powered-by">
+        Powered by
+        <img src={`${import.meta.env.BASE_URL}backin5-logo.png`} alt="BackIn5" className="powered-by-logo" />
+      </div>
     </div>
   )
 }

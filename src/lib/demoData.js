@@ -14,7 +14,7 @@ const aptIn = (days, h, m) => {
 
 export const DEMO_TRADE = {
   id: 'demo',
-  business_name: 'Summit Roofing Ltd',
+  business_name: 'Tradesman Ltd',
 }
 
 export const DEMO_ENQUIRIES = [
