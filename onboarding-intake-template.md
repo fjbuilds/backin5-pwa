@@ -1,107 +1,123 @@
-# BackIn5 — Customer Intake Template
+# BackIn5 — Client Intake Template
 
-Copy this whole template, fill in what you know from the customer, paste it back to me.
-Anything left blank I'll either skip or ask you about. Square brackets are notes / examples.
+Copy this whole template, fill in what you've gathered from the client, paste it back to me in Claude Code.
+Anything left blank I'll skip or ask about. Square brackets are notes / examples.
 
 ---
 
-## 1. Business
+## 1. Business basics
 
-- **Business name:**
-- **Contact name (owner/lead):**
-- **Contact mobile:**
-- **Contact email (where they log in):**
-- **Trade type:** [e.g. Roofer, Plumber, Electrician]
-- **Tier:** [Tier 1 / Tier 2 — default Tier 1]
+- **Business name:** [e.g. Summit Roofing Ltd]
+- **Trade type:** [e.g. Roofer / Plumber / Electrician / Gas engineer]
+- **Owner / main contact name:**
+- **Contact mobile (where notifications go):**
+- **Login email (the address that will receive their magic link / log into the PWA):**
 
-## 2. Services & coverage
+## 2. Service area
 
-- **Services offered:** [comma-separated list, e.g. Roof repair, Re-roofing, Guttering, Chimney work, Flat roof]
-- **Areas covered (towns):** [comma-separated, e.g. Manchester, Stockport, Altrincham]
-- **Postcodes covered:** [comma-separated prefixes, e.g. M, SK, WA]
+- **Services they offer:** [comma-separated, e.g. Roof repair, Re-roofing, Guttering, Chimney work]
+- **Towns they cover:** [comma-separated, e.g. Manchester, Stockport, Altrincham]
+- **Postcode prefixes they cover:** [comma-separated, e.g. M, SK, WA]
 
 ## 3. Website
 
-- **Website URL:** [https://...]
-- **Website platform:** [Wix / WordPress / Squarespace / Shopify / Webflow / Wix Studio / Other / No website]
-- **Install route:** [DIY / We install it / Their web developer does it]
-- **Web dev contact name:** [if "their web developer"]
-- **Web dev contact email:** [if "their web developer"]
+- **Website URL:**
+- **Website platform:** [Wix / WordPress / Squarespace / Webflow / Shopify / Custom / None]
+- **Who installs the widget:** [DIY / We install it / Their web dev does it]
+- **Web dev contact (if applicable):** [name + email]
 
 ## 4. Customer-facing messages
 
-- **Opening message (sent on enquiry receipt):**
-  [e.g. "Thanks for getting in touch with Summit Roofing! We've got your details and will be back to you within 5 minutes."]
+- **Opening message (auto-sent to customer on widget enquiry):**
+  [e.g. "Thanks for getting in touch with Summit Roofing! We'll be back to you within 5 minutes."]
 
-- **Confirmation message (sent on booking confirm):**
-  [e.g. "Booking confirmed for {date} at {time}. Reply CANCEL to reschedule."]
+- **Missed-call auto-text (sent if a call is missed):**
+  [e.g. "Sorry we missed your call! We'll ring back within 5 minutes. — Summit Roofing"]
 
-- **Expected reply time:** [e.g. "Within 5 minutes", "Within 1 hour", "Same day"]
+- **Expected reply time to show on widget:** [e.g. "Within 5 minutes" / "Within 1 hour" / "Same day"]
 
-## 5. Custom questions (up to 3, optional)
+## 5. Widget customisation
 
-These are extra questions added to their website form/widget.
+- **Brand colour (hex if known):** [e.g. #2C4FC4 — defaults to BackIn5 blue if unsure]
+- **Up to 3 custom questions** (extra questions added to their widget):
 
-### Question 1
-- **Question:** [e.g. "What type of property?"]
-- **Type:** [text / number / select / yes-no]
-- **Options (if select):** [comma-separated, e.g. House, Bungalow, Flat, Commercial]
-- **Required:** [yes / no]
+  **Q1:** [question text]
+  **Type:** [text / number / yes-no / multi-choice]
+  **Options if multi-choice:** [comma-separated]
+  **Required:** [yes / no]
 
-### Question 2
-- **Question:**
-- **Type:**
-- **Options:**
-- **Required:**
+  **Q2:** [question text]
+  **Type:**
+  **Options:**
+  **Required:**
 
-### Question 3
-- **Question:**
-- **Type:**
-- **Options:**
-- **Required:**
+  **Q3:** [question text]
+  **Type:**
+  **Options:**
+  **Required:**
 
-## 6. Photo / video uploads
+## 6. Photo uploads
 
-- **Enabled:** [yes / no]
-- **For which job types:** [comma-separated, leave blank = all]
+- **Allow customers to attach a photo?** [yes / no]
 
-## 7. Booking
+## 7. Booking (self-serve appointments)
 
-- **Enabled:** [yes / no]
-- **Booking types:** [Callback, Site visit, Quote consultation — pick any]
-- **Booking system:** [Calendly / Google Calendar / Manual / Other]
-- **Booking link:** [if Calendly or similar]
+- **Allow customers to request appointments via widget?** [yes / no]
+- **Booking types:** [Callback / Site visit / Quote consultation — pick any]
+- **Existing booking tool to integrate?** [Calendly / Google Calendar / None / Other]
+- **Booking link:** [if Calendly etc.]
 
-## 8. Missed call handling
+## 8. Missed call handling (Twilio)
 
-- **Enabled:** [yes / no — usually yes]
-- **Missed call message:**
-  [e.g. "Sorry we missed your call! We'll ring you back within 5 minutes. — Summit Roofing"]
-- **Twilio number to buy:** [area code preference, e.g. 0161 for Manchester. Leave blank for default.]
-- **Forward calls to:** [the contact mobile above, unless different]
+- **Want missed-call capture?** [yes / no — usually yes]
+- **Twilio area code preference:** [e.g. 0161 for Manchester. Blank = any UK number]
+- **Their phone number for call forwarding:** [usually the mobile from section 1]
 
-## 9. Email handling (if pulling enquiries from email)
+## 9. Email enquiry handling (optional for now)
 
-- **Email address that receives enquiries:** [e.g. info@summitroofing.co.uk]
-- **Provider:** [Gmail / Outlook / Other]
-- **Forwarding setup:** [Can they forward to our intake address, or do we need IMAP access?]
+- **Existing email address customers email:** [e.g. info@summitroofing.co.uk]
+- **Email provider:** [Gmail / Outlook / cPanel / Other]
+- **Will they set up forwarding to our intake?** [yes / no / not yet]
 
-## 10. Anything else
+## 10. Trial details
 
-- **Notes / special requirements:**
-- **Source:** [How did they find BackIn5? Just for our records.]
-- **Start date:** [When do they want to go live?]
+- **Go-live date:** [when they want to be live]
+- **Trial length:** [e.g. 14 days / 30 days]
+- **Trial pricing:** [Free / £X discount / Paid full]
+- **Success metrics for the trial:** [e.g. "captured X enquiries", "replied to Y% in under 5 min"]
+- **Notes / quirks / special requests:**
+- **How did they find BackIn5:** [referral / Instagram / cold outreach / etc.]
 
 ---
 
-## After you paste this back filled in, I will:
+## After you paste this back, I'll do:
 
-1. Insert the `businesses` row in Supabase
-2. Insert the `business_settings` row in Supabase
-3. Create their Supabase auth user and send you the magic link to forward
-4. Generate the per-customer Make config (which scenarios to wire up, what filters)
-5. Give you a checklist of manual steps:
-   - Buy Twilio number + set call forwarding
-   - Install widget / form on their website (or send to their web dev)
-   - Set up Gmail filter / forwarding rule
-   - Send customer their PWA link + magic link
+1. **SQL to insert their `trades` row** in Supabase
+2. **Create their Supabase auth user** (with a temp password you can share or magic link)
+3. **Their unique widget embed code** — `<script src="..." data-trade-id="..."></script>` ready for the install
+4. **Tailored welcome message** you can send them (their login link, what to expect)
+5. **A go-live checklist** specific to this client (Twilio steps, widget install instructions for their platform, what to test)
+
+## What you'll still need to do manually per client:
+
+- Buy the Twilio number (your card)
+- Install the widget on their site (if you said "we install it") or send to their web dev
+- Send the welcome message to the client
+- First test enquiry from your phone to confirm everything's flowing
+
+## After they go live:
+
+- Day 1 check-in: "Any enquiries come through? Anything weird?"
+- Day 7 check-in: "How many enquiries? What would make it better?"
+- End of trial: review metrics → convert to paid / extend / end
+
+---
+
+## What's NOT in the template yet (deferred until later)
+
+These exist in the schema spec but aren't wired into production:
+
+- `business_settings` table — opening_message, custom_questions config etc. are documented but not stored anywhere yet. For now I'll save them in notes per client and handle them manually in Make/widget config.
+- Tally onboarding form — you're doing manual onboarding for the first batch, this is for later.
+
+If your first client wants something we haven't built, flag it and I'll either build it fast or queue it.
