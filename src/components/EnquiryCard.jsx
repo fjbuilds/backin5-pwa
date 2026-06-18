@@ -110,7 +110,18 @@ export default function EnquiryCard({ enquiry, onChangeStatus, onSaveNotes, isEx
           <span className="card-v2-status" style={{ background: `${tagColor}1A`, color: tagColor }}>
             {tag}
           </span>
-          <span className="card-v2-time">{formatCardDate(enquiry.created_at)}</span>
+          <span className="card-v2-foot-right">
+            {enquiry.source && (
+              <span className="card-v2-source" title={`Came from: ${enquiry.source}`}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
+                </svg>
+                {enquiry.source}
+              </span>
+            )}
+            <span className="card-v2-time">{formatCardDate(enquiry.created_at)}</span>
+          </span>
         </div>
       </button>
 
@@ -234,6 +245,12 @@ export default function EnquiryCard({ enquiry, onChangeStatus, onSaveNotes, isEx
               <div className="exp-tile">
                 <div className="exp-tile-label">Booking type</div>
                 <div className="exp-tile-value">{enquiry.booking_type}</div>
+              </div>
+            )}
+            {enquiry.source && (
+              <div className="exp-tile">
+                <div className="exp-tile-label">Came from</div>
+                <div className="exp-tile-value" style={{ color: 'var(--primary)' }}>{enquiry.source}</div>
               </div>
             )}
           </div>
