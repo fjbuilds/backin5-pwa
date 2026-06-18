@@ -1,6 +1,9 @@
 import { useEffect, useRef, useMemo } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import 'leaflet.markercluster/dist/MarkerCluster.css'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
+import 'leaflet.markercluster'
 import { useGeocodePostcodes } from '../hooks/useGeocode'
 import { getActionColor } from '../lib/actionColors'
 
@@ -47,7 +50,12 @@ export default function MapView({ enquiries, onOpen }) {
       attribution: '© OpenStreetMap',
       maxZoom: 19,
     }).addTo(map)
-    markersLayer.current = L.layerGroup().addTo(map)
+    markersLayer.current = L.markerClusterGroup({
+      maxClusterRadius: 50,
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false,
+      chunkedLoading: true,
+    }).addTo(map)
     mapInstance.current = map
     return () => { map.remove(); mapInstance.current = null }
   }, [])
@@ -83,7 +91,7 @@ export default function MapView({ enquiries, onOpen }) {
           if (btn) btn.onclick = () => onOpen(e)
         }, 0)
       })
-      marker.addTo(markersLayer.current)
+      markersLayer.current.addLayer(marker)
       points.push([c.lat, c.lng])
     }
 
