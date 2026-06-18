@@ -12,6 +12,7 @@ import MapView from './components/MapView'
 import EnquiryCard from './components/EnquiryCard'
 import StatusPicker from './components/StatusPicker'
 import DemoTour from './components/DemoTour'
+import SetPasswordPrompt, { shouldShowPasswordPrompt } from './components/SetPasswordPrompt'
 import { groupKey, GROUP_LABELS, GROUP_ORDER } from './lib/dates'
 import { getActionColor } from './lib/actionColors'
 import { computeReminders } from './lib/reminders'
@@ -35,6 +36,7 @@ export default function App() {
   const [demoOverrides, setDemoOverrides] = useState({})
   const [dateRange, setDateRange] = useState({ from: null, to: null })
   const [view, setView] = useState('list')
+  const [pwdPromptOpen, setPwdPromptOpen] = useState(false)
 
   const displayEnquiries = IS_DEMO
     ? enquiries.map(e => demoOverrides[e.id] ? { ...e, ...demoOverrides[e.id] } : e)
@@ -110,6 +112,10 @@ export default function App() {
 
   if (!session && !IS_DEMO) {
     return <LoginScreen sendMagicLink={sendMagicLink} signInWithPassword={signInWithPassword} />
+  }
+
+  if (!IS_DEMO && !pwdPromptOpen && shouldShowPasswordPrompt(session)) {
+    setPwdPromptOpen(true)
   }
 
   function handleStatusUpdate({ status, tagField, tagValue }) {
@@ -278,6 +284,10 @@ export default function App() {
       </div>
 
       {IS_DEMO && <DemoTour />}
+
+      {pwdPromptOpen && (
+        <SetPasswordPrompt onClose={() => setPwdPromptOpen(false)} />
+      )}
     </div>
   )
 }
