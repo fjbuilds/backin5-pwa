@@ -51,10 +51,23 @@ export default function MapView({ enquiries, onOpen }) {
       maxZoom: 19,
     }).addTo(map)
     markersLayer.current = L.markerClusterGroup({
-      maxClusterRadius: 50,
+      maxClusterRadius: 80,
       spiderfyOnMaxZoom: true,
       showCoverageOnHover: false,
       chunkedLoading: true,
+      iconCreateFunction: (cluster) => {
+        const count = cluster.getChildCount()
+        const size = count < 10 ? 36 : count < 50 ? 44 : 52
+        const html = `<div style="
+          width:${size}px;height:${size}px;border-radius:50%;
+          background:#2C4FC4;color:#fff;
+          display:flex;align-items:center;justify-content:center;
+          font-weight:800;font-size:${size > 40 ? 16 : 14}px;
+          border:3px solid #fff;
+          box-shadow:0 4px 14px rgba(0,0,0,0.3);
+        ">${count}</div>`
+        return L.divIcon({ html, className: 'bi5-cluster', iconSize: [size, size] })
+      },
     }).addTo(map)
     mapInstance.current = map
     return () => { map.remove(); mapInstance.current = null }
