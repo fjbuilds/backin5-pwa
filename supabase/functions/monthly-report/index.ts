@@ -576,18 +576,21 @@ serve(async (req: Request) => {
     return new Response('Method not allowed', { status: 405, headers: corsHeaders })
   }
 
-  // Auth: require service_role bearer.
-  // Tolerant of whitespace/casing. Falls back to a project-set REPORT_AUTH_TOKEN
-  // secret if the auto-injected SUPABASE_SERVICE_ROLE_KEY is unavailable.
+  // Auth: accept EITHER the auto-injected SUPABASE_SERVICE_ROLE_KEY or a
+  // project-set REPORT_AUTH_TOKEN secret. Tolerant of whitespace/casing.
+  // Either one alone is enough — useful while rotating keys without locking
+  // ourselves out.
   const authHeader = req.headers.get('Authorization') ?? ''
   const presentedToken = authHeader.replace(/^\s*Bearer\s+/i, '').trim()
-  const expectedToken = (
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
-    ?? Deno.env.get('REPORT_AUTH_TOKEN')
-    ?? ''
-  ).trim()
+  const acceptedTokens = [
+    (Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '').trim(),
+    (Deno.env.get('REPORT_AUTH_TOKEN') ?? '').trim(),
+  ].filter(Boolean)
 
-  if (!presentedToken || !expectedToken || presentedToken !== expectedToken) {
+  const matched = presentedToken && acceptedTokens.includes(presentedToken)
+
+  if (!matched) {
+    const expectedToken = acceptedTokens[0] ?? ''
     // Debug mode: return non-sensitive diagnostics so we can see why the
     // comparison failed. Activate with ?debug=auth. Never echoes the keys
     // themselves — just lengths + first/last 4 chars so a mismatch is
