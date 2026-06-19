@@ -576,10 +576,43 @@ serve(async (req: Request) => {
     return new Response('Method not allowed', { status: 405, headers: corsHeaders })
   }
 
-  // Auth: require service_role bearer
-  const auth = req.headers.get('Authorization') ?? ''
-  const expected = `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`
-  if (!auth || auth !== expected) {
+  // Auth: require service_role bearer.
+  // Tolerant of whitespace/casing. Falls back to a project-set REPORT_AUTH_TOKEN
+  // secret if the auto-injected SUPABASE_SERVICE_ROLE_KEY is unavailable.
+  const authHeader = req.headers.get('Authorization') ?? ''
+  const presentedToken = authHeader.replace(/^\s*Bearer\s+/i, '').trim()
+  const expectedToken = (
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+    ?? Deno.env.get('REPORT_AUTH_TOKEN')
+    ?? ''
+  ).trim()
+
+  if (!presentedToken || !expectedToken || presentedToken !== expectedToken) {
+    // Debug mode: return non-sensitive diagnostics so we can see why the
+    // comparison failed. Activate with ?debug=auth. Never echoes the keys
+    // themselves — just lengths + first/last 4 chars so a mismatch is
+    // obvious without leaking the secret.
+    if (new URL(req.url).searchParams.get('debug') === 'auth') {
+      const obscure = (s: string) =>
+        s ? `${s.length} chars · ${s.slice(0, 4)}…${s.slice(-4)}` : '(empty)'
+      return new Response(
+        JSON.stringify({
+          error: 'Unauthorised',
+          debug: {
+            presentedToken: obscure(presentedToken),
+            expectedToken: obscure(expectedToken),
+            authHeaderRaw: authHeader ? `${authHeader.length} chars` : '(missing)',
+            envVarSource:
+              Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+                ? 'SUPABASE_SERVICE_ROLE_KEY'
+                : Deno.env.get('REPORT_AUTH_TOKEN')
+                  ? 'REPORT_AUTH_TOKEN'
+                  : '(neither set)',
+          },
+        }, null, 2),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      )
+    }
     return new Response(
       JSON.stringify({ error: 'Unauthorised — pass service_role key as Bearer token' }),
       { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
